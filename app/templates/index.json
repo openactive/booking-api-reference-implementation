@@ -1,0 +1,6 @@
+{
+  "links": {
+      "feed": "{{ host }}api/rpde",
+      "terms_and_conditions": "{{ host }}terms-and-conditions"
+  }
+}

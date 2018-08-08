@@ -58,5 +58,15 @@ ERRORS = {
         "status": "410",
         "instance": "",
         "method": ""
+    },
+    "method_not_allowed": {
+        "@context": "https://openactive.io/ns/oa.jsonld",
+        "type": "Error",
+        "errorType": "https://openactive.io/errors/method_not_allowed",
+        "title": "Method not allowed",
+        "details": "The endpoint or resource you requested does not respond to the HTTP verb you supplied",
+        "status": "405",
+        "instance": "",
+        "method": ""
     }
 }

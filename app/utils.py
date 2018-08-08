@@ -4,7 +4,6 @@ import json
 
 import constants
 import errors
-import logging
 
 
 def json_response(data, created=False, created_key=None, error=False):
