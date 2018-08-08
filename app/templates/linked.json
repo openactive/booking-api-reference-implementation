@@ -1,0 +1,4 @@
+{
+  {% include "fragments/links.json" %}{% if data %},
+  "data": {{ data }} {% endif %}
+}

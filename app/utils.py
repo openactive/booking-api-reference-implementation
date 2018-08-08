@@ -1,4 +1,4 @@
-from flask import request, Response
+from flask import request, Response, render_template
 from functools import wraps
 import json
 
@@ -24,6 +24,19 @@ def error_response(error_condition):
     data['instance'] = request.path
     data['method'] = request.method
     return json_response(data, error=True)
+
+
+def render_json(template_name, params={}):
+    params['host'] = request.host_url
+    return json.loads(render_template(template_name, **params))
+
+
+def read_file(path, json_format=True):
+    if json_format:
+        file_contents = json.loads(open(path, 'r').read())
+    else:
+        file_contents = open(path, 'r').read()
+    return file_contents
 
 
 def check_auth(username, password):

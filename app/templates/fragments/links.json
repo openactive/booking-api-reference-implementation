@@ -1,0 +1,5 @@
+"links": {
+  {% for link in links %}
+    "{{ link }}": "{{ host }}{{ links[link]}}"{% if not loop.last %},{% endif %}
+  {% endfor %}
+}

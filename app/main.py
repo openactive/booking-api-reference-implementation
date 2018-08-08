@@ -9,8 +9,15 @@ app = Flask(__name__)
 
 @app.route("/")
 @utils.requires_auth
-def hello():
-    return utils.json_response({'message': 'hello world'})
+def index():
+    variables = {
+        "links": {
+            "feed": "feed",
+            "terms_and_conditions": "terms-and-conditions"
+        }
+    }
+    data = utils.render_json('linked.json', variables)
+    return utils.json_response(data)
 
 
 @app.route("/<path:path>")
