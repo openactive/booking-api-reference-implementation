@@ -32,6 +32,7 @@ def feed():
 def create_order():
     order_id = str(uuid.uuid4())
     order = models.Order(order_id)
+    order.create({})
     return utils.json_response(order.as_json_ld(), created=True, created_key=order.as_json_ld()['id'].replace('$HOST$', ''))
 
 
@@ -40,6 +41,7 @@ def create_order():
 @utils.requires_auth
 def get_order(order_id):
     order = models.Order(order_id)
+    order.get()
     return utils.json_response(order.as_json_ld())
 
 
@@ -47,6 +49,7 @@ def get_order(order_id):
 @utils.requires_auth
 def update_order(order_id):
     order = models.Order(order_id)
+    order.update({})
     return utils.json_response(order.as_json_ld())
 
 
@@ -54,6 +57,7 @@ def update_order(order_id):
 @utils.requires_auth
 def delete_order(order_id):
     order = models.Order(order_id)
+    order.delete()
     return utils.json_response(order.as_json_ld())
 
 

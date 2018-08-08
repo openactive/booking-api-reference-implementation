@@ -16,13 +16,24 @@ class BaseModel():
 
     type: str = None
     identifier: str = None
-    #context_definition =
     id: str = None
 
     def __init__(self, _identifier=False):
         if _identifier:
             self.identifier = _identifier
             self.id = '$HOST$/' + self.type.lower() + '/' + self.identifier
+
+    def create(self, variables):
+        pass
+
+    def update(self, variables):
+        pass
+
+    def get(self):
+        pass
+
+    def delete(self):
+        pass
 
     def get_variables(self):
         variables = [attr for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith('__') and not attr.startswith('_')]
