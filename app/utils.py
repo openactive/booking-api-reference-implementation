@@ -7,7 +7,7 @@ import errors
 import logging
 
 
-def build_json_response(data, created=False, created_key=None, error=False):
+def json_response(data, created=False, created_key=None, error=False):
     if error:
         response = Response(json.dumps(data), int(data['status']))
     else:
@@ -19,11 +19,11 @@ def build_json_response(data, created=False, created_key=None, error=False):
     return response
 
 
-def return_error(error_condition):
+def error_response(error_condition):
     data = errors.ERRORS[error_condition]
     data['instance'] = request.path
     data['method'] = request.method
-    return build_json_response(data, error=True)
+    return json_response(data, error=True)
 
 
 def check_auth(username, password):
@@ -58,13 +58,13 @@ def requires_auth(f):
             _apikey_check = False
 
         if not _auth and not _apikey:
-            return return_error('unauthenticated')
+            return error_response('unauthenticated')
         else:
             if _auth:
                 if not _auth_check:
-                    return return_error('invalid_authorization_details')
+                    return error_response('invalid_authorization_details')
             else:
                 if not _apikey_check:
-                    return return_error('invalid_api_token_provided')
+                    return error_response('invalid_api_token_provided')
         return f(*args, **kwargs)
     return decorated
