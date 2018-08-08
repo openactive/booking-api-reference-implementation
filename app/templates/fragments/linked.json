@@ -1,6 +1,0 @@
-{
-  "@context": "https://openactive.io/ns/oa.jsonld"
-  {% if order %}
-    ,{% include "fragments/order.json" %}
-  {% endif %}
-}

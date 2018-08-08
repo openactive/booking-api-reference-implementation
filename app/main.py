@@ -1,6 +1,8 @@
 from flask import Flask
+import uuid
 
 import utils
+import models
 
 import logging
 
@@ -28,41 +30,31 @@ def feed():
 @app.route("/api/orders", methods=["POST"])
 @utils.requires_auth
 def create_order():
-    variables = {
-        'order': True
-    }
-    data = utils.render_json('fragments/linked.json', variables)
-    return utils.json_response(data)
+    order_id = str(uuid.uuid4())
+    order = models.Order(order_id)
+    return utils.json_response(order.as_json_ld(), created=True, created_key=order.as_json_ld()['id'].replace('$HOST$', ''))
 
 
+@app.route("/orders/<order_id>", methods=["GET"])
 @app.route("/api/orders/<order_id>", methods=["GET"])
 @utils.requires_auth
 def get_order(order_id):
-    variables = {
-        'order': True
-    }
-    data = utils.render_json('fragments/linked.json', variables)
-    return utils.json_response(data)
+    order = models.Order(order_id)
+    return utils.json_response(order.as_json_ld())
 
 
 @app.route("/api/orders/<order_id>", methods=["PATCH"])
 @utils.requires_auth
 def update_order(order_id):
-    variables = {
-        'order': True
-    }
-    data = utils.render_json('fragments/linked.json', variables)
-    return utils.json_response(data)
+    order = models.Order(order_id)
+    return utils.json_response(order.as_json_ld())
 
 
 @app.route("/api/orders/<order_id>", methods=["DELETE"])
 @utils.requires_auth
 def delete_order(order_id):
-    variables = {
-        'order': True
-    }
-    data = utils.render_json('fragments/linked.json', variables)
-    return utils.json_response(data)
+    order = models.Order(order_id)
+    return utils.json_response(order.as_json_ld())
 
 
 ### HANDLING ERRORS ###

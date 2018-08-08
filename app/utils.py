@@ -6,15 +6,18 @@ import constants
 import errors
 
 
-def json_response(data, created=False, created_key=None, error=False):
+def json_response(json_data, created=False, created_key=None, error=False):
+    data = json.dumps(json_data)
+    data = data.replace('$HOST$', request.host_url[0:len(request.host_url)-1])
     if error:
-        response = Response(json.dumps(data), int(data['status']))
+        response = Response(data, int(json_data['status']))
     else:
-        response = Response(json.dumps(data))
-    response.headers['Content-Type'] = 'application/vnd.openactive.v{version}+json'.format(
-        version=constants.API['version'])
-    if created:
-        response.headers['Location'] = created_key
+        if created:
+            response = Response(data, 201)
+            response.headers['Location'] = created_key
+        else:
+            response = Response(data)
+    response.headers['Content-Type'] = 'application/vnd.openactive.v{version}+json'.format(version=constants.API['version'])
     return response
 
 
@@ -27,7 +30,9 @@ def error_response(error_condition):
 
 def render_json(template_name, params={}):
     params['host'] = request.host_url
-    return json.loads(render_template(template_name, **params))
+    rendered = render_template(template_name, **params)
+    rendered = rendered.replace('$HOST$',params['host'])
+    return json.loads(rendered)
 
 
 def read_file(path, json_format=True):
