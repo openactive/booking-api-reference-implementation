@@ -4,13 +4,14 @@ import json
 
 import constants
 import errors
-
+import logging
 
 def json_response(json_data, created=False, created_key=None, error=False):
     data = json.dumps(json_data)
     data = data.replace('$HOST$', request.host_url[0:len(request.host_url)-1])
+    data = data.replace('$VERSION$', constants.API['version'])
     if error:
-        response = Response(data, int(json_data['status']))
+        response = Response(data, json_data['status'])
     else:
         if created:
             response = Response(data, 201)
@@ -57,7 +58,6 @@ def get_api_key():
     else:
         return False
 
-
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -85,3 +85,30 @@ def requires_auth(f):
                     return error_response('invalid_api_token_provided')
         return f(*args, **kwargs)
     return decorated
+
+
+def request_variables(params):
+    variables = {}
+    erroring_params = []
+    if request.method == "GET":
+        for param in params:
+            if request.args.get(param) is not None:
+                if len(request.args.get(param)) != 0:
+                    variables[param] = request.args.get(param)
+                else:
+                    erroring_params.append(param)
+            else:
+                erroring_params.append(param)
+    else:
+        logging.warn(request.headers['Accept'])
+        if 'vnd.openactive' in request.headers['Accept']:
+            request_body = request.data
+            json_request_body = json.loads(request_body)
+        else:
+            json_request_body = request.get_json()
+        for param in params:
+            if param in json_request_body:
+                variables[param] = json_request_body[param]
+            else:
+                erroring_params.append(param)
+    return variables, erroring_params

@@ -2,6 +2,8 @@ from typing import Dict
 from typing import List
 from typing import get_type_hints
 
+import logging
+
 time_variables = []
 
 """
@@ -15,8 +17,6 @@ time_variables = []
 class BaseModel():
 
     type: str = None
-    identifier: str = None
-    id: str = None
 
     def __init__(self, _identifier=False):
         if _identifier:
@@ -24,6 +24,9 @@ class BaseModel():
             self.id = '$HOST$/' + self.type.lower() + '/' + self.identifier
 
     def create(self, variables):
+        for attr in variables:
+            if attr in self.get_attrs():
+                setattr(self, attr, variables[attr])
         pass
 
     def update(self, variables):
@@ -35,13 +38,16 @@ class BaseModel():
     def delete(self):
         pass
 
-    def get_variables(self):
-        variables = [attr for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith('__') and not attr.startswith('_')]
-        return variables
+    def get_attrs(self):
+        attrs = [attr for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith('__') and not attr.startswith('_')]
+        return attrs
+
+    def set_attr(self):
+        pass
 
     def as_dict(self):
         _as_json = {}
-        for variable in self.get_variables():
+        for variable in self.get_attrs():
             if variable in time_variables:
                 if getattr(self, variable) is not None:
                     try:
@@ -59,7 +65,37 @@ class BaseModel():
         _as_json_ld['@context'] = 'https://openactive.io/ns/oa.jsonld'
         return _as_json_ld
 
-class Order(BaseModel):
+class ObjectModel(BaseModel):
+
+    identifier: str = None
+    id: str = None
+
+
+class Order(ObjectModel):
 
     type = "Order"
+    broker: Dict = {}
+    customer: Dict = {}
+    orderedItem: List[Dict] = {}
     potentialAction: List[Dict] = []
+
+    def create(self, variables):
+        super(Order, self).create(variables)
+        self.potentialAction.append(Action().new('Pay'))
+        pass
+
+
+class Action(BaseModel):
+
+    name: str = None
+    target: Dict = {
+        "type": "EntryPoint",
+        "urlTemplate": "$HOST$/{order_id}",
+        "encodingType": "application/vnd.openactive.v$VERSION$+json",
+        "httpMethod": "PATCH"
+    }
+
+    def new(self, name,):
+        self.name = name
+        self.type = name + 'Action'
+        return self.as_json_ld()

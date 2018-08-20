@@ -30,10 +30,16 @@ def feed():
 @app.route("/api/orders", methods=["POST"])
 @utils.requires_auth
 def create_order():
-    order_id = str(uuid.uuid4())
-    order = models.Order(order_id)
-    order.create({})
-    return utils.json_response(order.as_json_ld(), created=True, created_key=order.as_json_ld()['id'].replace('$HOST$', ''))
+    params = ['product',    'orderedItem','customer','broker']
+    variables, erroring_params = utils.request_variables(params)
+    if len(erroring_params) > 0:
+        return utils.error_response("method_not_allowed")
+    else:
+        logging.warn(variables)
+        order_id = str(uuid.uuid4())
+        order = models.Order(order_id)
+        order.create(variables)
+        return utils.json_response(order.as_json_ld(), created=True, created_key=order.as_json_ld()['id'].replace('$HOST$', ''))
 
 
 @app.route("/orders/<order_id>", methods=["GET"])
@@ -92,7 +98,7 @@ def order_error(order_id):
 
 
 # default error handling for 404, route not found
-@app.route("/<path:path>")
+@app.route("/<path:path>", methods=["GET", "POST", "PUT", "PATCH", "DELETE"])
 @utils.requires_auth
 def default(path):
     return utils.error_response("not_found")
