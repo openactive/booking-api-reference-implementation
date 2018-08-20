@@ -1,0 +1,26 @@
+{
+    "@context": "https://openactive.io/ns/oa.jsonld",
+    "type": "Order",
+    "broker": {
+        "type": "Organization",
+        "name": "MyFitnessApp",
+        "url": "https://myfitnessapp.example.com"
+    },
+    "customer": {
+        "type": "Person",
+        "email": "geoffcapes@example.com",
+        "givenName": "Geoff",
+        "familyName": "Capes"
+    },
+    "acceptedOffer": [{
+  		"type": "Offer",
+      "id": "https://example.com/offers/567",
+  	}],
+    "orderedItem": [{
+        "orderQuantity":"1",
+        "orderedItem": {
+          "type": "Event",
+          "id": "https://example.com/events/123"
+        }
+    }]   
+}
