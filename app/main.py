@@ -1,12 +1,19 @@
+import click
 from flask import Flask
 import uuid
 
 import utils
 import models
 
+from manage import Manage
+
 import logging
 
 app = Flask(__name__)
+manage = Manage(app)
+if not manage.check_persistence_exists():
+    manage.build_clean_persistence()
+    manage.populate_persistence()
 
 
 @app.route("/", methods=["GET"])
@@ -102,3 +109,11 @@ def order_error(order_id):
 @utils.requires_auth
 def default(path):
     return utils.error_response("not_found")
+
+
+@app.cli.command()
+def rebuild():
+    manage = Manage(app)
+    manage.reset_local_persistence()
+    manage.build_clean_persistence()
+    manage.populate_persistence()
