@@ -6,3 +6,8 @@ API = {
     },
     "apiKey": "rr4nlnyhi3tdoonxfysi"
 }
+
+LOCAL_PERSISTENCE = {
+    "folder": "local_data",
+    "models": ['event','offer','order']
+}

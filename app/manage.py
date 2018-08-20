@@ -1,16 +1,7 @@
 import os
 import shutil
 
-
-persistence_structure = {
-    "folder": "local_data",
-    "contains": [
-        {"folder": "events"},
-        {"folder": "offers"},
-        {"folder": "orders"}
-    ]
-}
-
+from constants import LOCAL_PERSISTENCE
 
 class Manage():
 
@@ -18,8 +9,8 @@ class Manage():
         self.app = app
 
     def reset_local_persistence(self):
-        if self.check_folder_exists(persistence_structure['folder']):
-            path = os.path.join(self.app.root_path, persistence_structure['folder'])
+        if self.check_folder_exists(LOCAL_PERSISTENCE['folder']):
+            path = os.path.join(self.app.root_path, LOCAL_PERSISTENCE['folder'])
             shutil.rmtree(path)
 
     def check_folder_exists(self, folder):
@@ -30,7 +21,7 @@ class Manage():
             return True
 
     def check_persistence_exists(self):
-        if not self.check_folder_exists(persistence_structure['folder']):
+        if not self.check_folder_exists(LOCAL_PERSISTENCE['folder']):
             return False
         else:
             return True
@@ -43,9 +34,9 @@ class Manage():
     def build_clean_persistence(self):
         if not self.check_persistence_exists():
             print('>> Building persistence folder structure')
-            self.add_folder(persistence_structure['folder'])
-            for folder in persistence_structure['contains']:
-                folder_path = persistence_structure['folder'] + '/' + folder['folder']
+            self.add_folder(LOCAL_PERSISTENCE['folder'])
+            for model in LOCAL_PERSISTENCE['models']:
+                folder_path = LOCAL_PERSISTENCE['folder'] + '/' + model
                 self.add_folder(folder_path)
         pass
 
