@@ -4,6 +4,7 @@ import uuid
 
 import utils
 import models
+import actions
 
 from manage import Manage
 
@@ -37,7 +38,7 @@ def feed():
 @app.route("/api/orders", methods=["POST"])
 @utils.requires_auth
 def create_order():
-    params = ['product',    'orderedItem','customer','broker']
+    params = ['product', 'orderedItem','customer','broker']
     variables, erroring_params = utils.request_variables(params)
     if len(erroring_params) > 0:
         return utils.error_response("method_not_allowed")
@@ -53,9 +54,13 @@ def create_order():
 @app.route("/api/orders/<order_id>", methods=["GET"])
 @utils.requires_auth
 def get_order(order_id):
-    order = models.Order(order_id)
-    order.get()
-    return utils.json_response(order.as_json_ld())
+    #order = models.Order(order_id)
+    #order.get()
+    data, error = actions.Order().get(order_id)
+    if not error:
+        return utils.json_response(data)
+    else:
+        return utils.error_response(error)
 
 
 @app.route("/api/orders/<order_id>", methods=["PATCH"])
