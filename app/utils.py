@@ -36,14 +36,6 @@ def render_json(template_name, params={}):
     return json.loads(rendered)
 
 
-def read_file(path, json_format=True):
-    if json_format:
-        file_contents = json.loads(open(path, 'r').read())
-    else:
-        file_contents = open(path, 'r').read()
-    return file_contents
-
-
 def check_auth(username, password):
     return username == constants.API['basicAuth']['username'] and password == constants.API['basicAuth']['password']
 

@@ -54,8 +54,6 @@ def create_order():
 @app.route("/api/orders/<order_id>", methods=["GET"])
 @utils.requires_auth
 def get_order(order_id):
-    #order = models.Order(order_id)
-    #order.get()
     data, error = actions.Order().get(order_id)
     if not error:
         return utils.json_response(data)
