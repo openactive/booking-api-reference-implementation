@@ -24,15 +24,16 @@ class BaseModel():
             self.id = '$HOST$/' + self.type.lower() + '/' + self.identifier
 
     def create(self, variables):
-        for attr in variables:
-            if attr in self.get_attrs():
-                setattr(self, attr, variables[attr])
+        self.load(variables)
         pass
 
     def update(self, variables):
         pass
 
-    def get(self):
+    def load(self, variables):
+        for attr in variables:
+            if attr in self.get_attrs():
+                setattr(self, attr, variables[attr])
         pass
 
     def delete(self):

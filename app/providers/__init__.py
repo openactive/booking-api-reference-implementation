@@ -1,4 +1,3 @@
-from providers.filesystem import FileSystemProvider as FileSystem
+from providers.filesystem import FileSystemProvider
 
-
-Provider = FileSystem
+DefaultProvider = FileSystemProvider
