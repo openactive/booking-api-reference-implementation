@@ -77,12 +77,26 @@ class Order(ObjectModel):
     type = "Order"
     broker: Dict = {}
     customer: Dict = {}
+    orderDate: str = ""
     orderedItem: List[Dict] = {}
+    orderLeaseDuration: str = "PT15M"
+    orderStatus: str = "https://schema.org/OrderPaymentDue"
+    partOfInvoice: Dict = {}
+    paymentDueDate: str = ""
     potentialAction: List[Dict] = []
+
 
     def create(self, variables):
         super(Order, self).create(variables)
-        self.potentialAction.append(Action().new('Pay'))
+        self.potentialAction.append(Action().new('Pay', url='$HOST$/orders/{order_id}'))
+        pass
+
+
+    def update(self, variables, cancel=False):
+        super(Order, self).update(variables)
+        self.potentialAction = []
+        if not cancel:
+            logging.warn("PAYMENT")
         pass
 
 
@@ -96,7 +110,9 @@ class Action(BaseModel):
         "httpMethod": "PATCH"
     }
 
-    def new(self, name,):
+    def new(self, name, url=False):
         self.name = name
         self.type = name + 'Action'
+        if url:
+            self.target['urlTemplate'] = url
         return self.as_json_ld()

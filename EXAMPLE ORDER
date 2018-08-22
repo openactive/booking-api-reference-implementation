@@ -4,30 +4,30 @@
 	"id": "https://example.com/orders/890",
 	"acceptedOffer": [{
 		"type": "Offer",
-    "description": "Winger space for Speedball.",
-    "id": "https://example.com/offers/567",
-    "itemOffered": {
+		"description": "Winger space for Speedball.",
+		"id": "https://example.com/offers/567",
+		"itemOffered": {
 			"type": "Event",
 			"id": "https://example.com/events/123"
 		},
-    "name": "Speedball winger position",
-    "price": "10.00",
-		"priceCurrency": "GBP"
+		"name": "Speedball winger position",
+		"price": "10.00",
+		"priceCurrency": "GBP",
 		"validFrom": "2018-04-29T12:14:35Z",
-		"validTo": "2018-04-01T12:14:35Z",
+		"validTo": "2018-04-01T12:14:35Z"
 	}],
-  "broker": {
+	"broker": {
 		"type": "Organization",
 		"name": "MyFitnessApp",
 		"url": "https://myfitnessapp.example.com"
 	},
-  "customer": {
+	"customer": {
 		"type": "Person",
 		"email": "geoffcapes@example.com",
 		"givenName": "Geoff",
 		"familyName": "Capes"
 	},
-  "orderDate": "2018-02-20T11:00:00Z",
+	"orderDate": "2018-02-20T11:00:00Z",
 	"orderedItem": [{
 		"type": "OrderItem",
 		"orderQuantity": 1,
@@ -36,8 +36,8 @@
 			"id": "https://example.com/events/123"
 		}
 	}],
-  "orderLeaseDuration": "PT15M",
-  "orderStatus": "https://schema.org/OrderPaymentDue",
+	"orderLeaseDuration": "PT15M",
+	"orderStatus": "https://schema.org/OrderPaymentDue",
 	"partOfInvoice": {
 		"type": "Invoice",
 		"paymentStatus": "PaymentDue",
@@ -47,15 +47,15 @@
 			"currency": "GBP"
 		}
 	},
-  "paymentDueDate": "2018-02-20T11:00:00Z",
-  "potentialAction": [{
-    "type": "PayAction",
-    "name": "Pay",
-    "target": {
-      "type": "EntryPoint",
-      "urlTemplate": "https://example.com/orders/{order_id}",
-      "encodingType": "application/vnd.openactive.v0.8+json",
-      "httpMethod": "PATCH"
-    }
-  }]
+	"paymentDueDate": "2018-02-20T11:00:00Z",
+	"potentialAction": [{
+		"type": "PayAction",
+		"name": "Pay",
+		"target": {
+			"type": "EntryPoint",
+			"urlTemplate": "https://example.com/orders/{order_id}",
+			"encodingType": "application/vnd.openactive.v0.8+json",
+			"httpMethod": "PATCH"
+		}
+	}]
 }
