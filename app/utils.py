@@ -6,9 +6,10 @@ import constants
 import errors
 import logging
 
+
 def json_response(json_data, created=False, created_key=None, error=False):
     data = json.dumps(json_data)
-    data = data.replace('$HOST$', request.host_url[0:len(request.host_url)-1])
+    data = data.replace('$HOST$', request.host_url[0:len(request.host_url) - 1])
     data = data.replace('$VERSION$', constants.API['version'])
     if error:
         response = Response(data, json_data['status'])
@@ -18,7 +19,8 @@ def json_response(json_data, created=False, created_key=None, error=False):
             response.headers['Location'] = created_key
         else:
             response = Response(data)
-    response.headers['Content-Type'] = 'application/vnd.openactive.v{version}+json'.format(version=constants.API['version'])
+    response.headers['Content-Type'] = 'application/vnd.openactive.v{version}+json'.format(
+        version=constants.API['version'])
     return response
 
 
@@ -32,7 +34,7 @@ def error_response(error_condition):
 def render_json(template_name, params={}):
     params['host'] = request.host_url
     rendered = render_template(template_name, **params)
-    rendered = rendered.replace('$HOST$',params['host'])
+    rendered = rendered.replace('$HOST$', params['host'])
     return json.loads(rendered)
 
 
@@ -49,6 +51,7 @@ def get_api_key():
         return request.headers['x-api-key']
     else:
         return False
+
 
 def requires_auth(f):
     @wraps(f)
@@ -82,6 +85,7 @@ def requires_auth(f):
 def request_variables(params):
     variables = {}
     erroring_params = []
+    error = False
     if request.method == "GET":
         for param in params:
             if request.args.get(param) is not None:
@@ -92,10 +96,15 @@ def request_variables(params):
             else:
                 erroring_params.append(param)
     else:
-        logging.warn(request.headers['Accept'])
         if 'vnd.openactive' in request.headers['Accept']:
             request_body = request.data
-            json_request_body = json.loads(request_body)
+            if len(request_body) > 0:
+                try:
+                    json_request_body = json.loads(request_body)
+                except:
+                    return None, params, 'not_valid_json'
+            else:
+                return None, params, 'no_data_supplied'
         else:
             json_request_body = request.get_json()
         for param in params:
@@ -103,4 +112,4 @@ def request_variables(params):
                 variables[param] = json_request_body[param]
             else:
                 erroring_params.append(param)
-    return variables, erroring_params
+    return variables, erroring_params, error
