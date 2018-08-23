@@ -4,6 +4,7 @@ from typing import get_type_hints
 
 from providers import DefaultProvider
 import importlib
+import json
 
 import logging
 
@@ -17,6 +18,7 @@ time_variables = []
     of the model.
 """
 
+
 class BaseModel():
 
     type: str = None
@@ -24,15 +26,19 @@ class BaseModel():
     def __init__(self):
         self._resource_type = self.__class__.__name__.lower()
 
-
     def create(self, variables):
         self.load(variables)
-        pass
+        errors = self._provider.write(
+            self._resource_type.lower(), self.identifier, json.dumps(self.as_json_ld(), sort_keys=True, indent=4, separators=(',', ': ')))
+        return self.as_json_ld, errors
 
     def get(self):
-        data, errors = self._provider.read(self._resource_type.lower(), self._identifier)
-        self.load(data)
-        return self.as_json_ld(), errors
+        data, errors = self._provider.read(self._resource_type.lower(), self.identifier)
+        if data is not None:
+            self.load(data)
+            return self.as_json_ld(), errors
+        else:
+            return None, 'resource_not_found'
 
     def update(self, variables):
         pass
@@ -47,7 +53,8 @@ class BaseModel():
         pass
 
     def get_attrs(self):
-        attrs = [attr for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith('__') and not attr.startswith('_')]
+        attrs = [attr for attr in dir(self) if not callable(
+            getattr(self, attr)) and not attr.startswith('__') and not attr.startswith('_')]
         return attrs
 
     def set_attr(self):
@@ -73,6 +80,7 @@ class BaseModel():
         _as_json_ld['@context'] = 'https://openactive.io/ns/oa.jsonld'
         return _as_json_ld
 
+
 class ObjectModel(BaseModel):
 
     identifier: str = None
@@ -82,10 +90,11 @@ class ObjectModel(BaseModel):
         super(ObjectModel, self).__init__()
         self._provider = DefaultProvider()
         if not _identifier:
-            _identifier = self._provider.get_unique_id(self._resource_type)
-        self._identifier = _identifier
-        self.id = '$HOST$/' + self._resource_type.lower() + '/' + self._identifier
-
+            self.identifier = self._provider.get_unique_id(self._resource_type)
+        else:
+            self.identifier = _identifier
+        self.id = '$HOST$/' + self._resource_type.lower() + '/' + self.identifier
+        logging.warn("IDENTIFIER = " + str(self.identifier))
 
 
 class Order(ObjectModel):
@@ -102,12 +111,10 @@ class Order(ObjectModel):
     paymentDueDate: str = ""
     potentialAction: List[Dict] = []
 
-
     def create(self, variables):
         super(Order, self).create(variables)
         self.potentialAction.append(Action().new('Pay', url='$HOST$/orders/{order_id}'))
         pass
-
 
     def update(self, variables, cancel=False):
         super(Order, self).update(variables)
