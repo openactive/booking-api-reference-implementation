@@ -2,6 +2,9 @@ from typing import Dict
 from typing import List
 from typing import get_type_hints
 
+from providers import DefaultProvider
+import importlib
+
 import logging
 
 time_variables = []
@@ -18,14 +21,18 @@ class BaseModel():
 
     type: str = None
 
-    def __init__(self, _identifier=False):
-        if _identifier:
-            self.identifier = _identifier
-            self.id = '$HOST$/' + self.type.lower() + '/' + self.identifier
+    def __init__(self):
+        self._resource_type = self.__class__.__name__.lower()
+
 
     def create(self, variables):
         self.load(variables)
         pass
+
+    def get(self):
+        data, errors = self._provider.read(self._resource_type.lower(), self._identifier)
+        self.load(data)
+        return self.as_json_ld(), errors
 
     def update(self, variables):
         pass
@@ -71,10 +78,20 @@ class ObjectModel(BaseModel):
     identifier: str = None
     id: str = None
 
+    def __init__(self, _identifier=False):
+        super(ObjectModel, self).__init__()
+        self._provider = DefaultProvider()
+        if not _identifier:
+            _identifier = self._provider.get_unique_id(self._resource_type)
+        self._identifier = _identifier
+        self.id = '$HOST$/' + self._resource_type.lower() + '/' + self._identifier
+
+
 
 class Order(ObjectModel):
 
     type = "Order"
+    acceptedOffer: List[Dict] = []
     broker: Dict = {}
     customer: Dict = {}
     orderDate: str = ""

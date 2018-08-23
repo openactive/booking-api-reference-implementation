@@ -1,8 +1,8 @@
 from constants import LOCAL_PERSISTENCE
 import json
+import random
 
 import logging
-
 
 class FileSystemProvider():
 
@@ -12,9 +12,18 @@ class FileSystemProvider():
     def get_file_handle(self, resource_type, resource_id, mode):
         return open(self.build_filepath(resource_type, resource_id), mode)
 
-    def create(self, resource_type, resource_id, variables):
-        _file = self.get_file_handle(resource_type, resource_id, 'w')
-        pass
+    def get_unique_id(self, resource_type):
+        resource_id = str(random.randint(0, 10000))
+        is_unique = False
+        try:
+            self.get_file_handle(resource_type, resource_id, 'r')
+        except:
+            is_unique = True
+
+        if is_unique:
+            return resource_id
+        else:
+            return self.get_unique_id()
 
     def read(self, resource_type, resource_id):
         data = None
@@ -28,10 +37,9 @@ class FileSystemProvider():
                 data = json.loads(_file.read())
             except:
                 error = 'server_error'
-
         return data, error
 
-    def update(self, resource_type, resource_id, variables):
+    def write(self, resource_type, resource_id, variables):
         _file = self.get_file_handle(resource_type, resource_id, 'w')
         pass
 

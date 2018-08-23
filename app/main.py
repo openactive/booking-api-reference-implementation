@@ -38,14 +38,12 @@ def feed():
 @app.route("/api/orders", methods=["POST"])
 @utils.requires_auth
 def create_order():
-    params = ['product', 'orderedItem','customer','broker']
+    params = ['orderedItem', 'acceptedOffer', 'customer','broker']
     variables, erroring_params = utils.request_variables(params)
     if len(erroring_params) > 0:
         return utils.error_response("method_not_allowed")
     else:
-        logging.warn(variables)
-        order_id = str(uuid.uuid4())
-        order = models.Order(order_id)
+        order = models.Order()
         order.create(variables)
         return utils.json_response(order.as_json_ld(), created=True, created_key=order.as_json_ld()['id'].replace('$HOST$', ''))
 
@@ -54,7 +52,7 @@ def create_order():
 @app.route("/api/orders/<order_id>", methods=["GET"])
 @utils.requires_auth
 def get_order(order_id):
-    data, error = actions.Order().get(order_id)
+    data, error = models.Order(order_id).get()
     if not error:
         return utils.json_response(data)
     else:
