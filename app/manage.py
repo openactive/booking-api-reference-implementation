@@ -3,6 +3,7 @@ import shutil
 
 from constants import LOCAL_PERSISTENCE
 
+
 class Manage():
 
     def __init__(self, app):
@@ -29,7 +30,6 @@ class Manage():
     def add_folder(self, folder):
         path = os.path.join(self.app.root_path, folder)
         os.makedirs(path)
-
 
     def build_clean_persistence(self):
         if not self.check_persistence_exists():

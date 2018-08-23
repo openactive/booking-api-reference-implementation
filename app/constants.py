@@ -8,6 +8,6 @@ API = {
 }
 
 LOCAL_PERSISTENCE = {
-    "folder": "local_data",
-    "models": ['event','offer','order']
+    "folder": "../local_data",
+    "models": ['event', 'offer', 'order']
 }

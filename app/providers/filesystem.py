@@ -7,7 +7,7 @@ import logging
 class FileSystemProvider():
 
     def build_filepath(self, resource_type, resource_id):
-        return '../' + LOCAL_PERSISTENCE['folder'] + '/' + resource_type + '/' + resource_id + '.json'
+        return LOCAL_PERSISTENCE['folder'] + '/' + resource_type + '/' + resource_id + '.json'
 
     def get_file_handle(self, resource_type, resource_id, mode):
         return open(self.build_filepath(resource_type, resource_id), mode)
