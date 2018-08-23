@@ -68,5 +68,25 @@ ERRORS = {
         "status": 405,
         "instance": "",
         "method": ""
+    },
+    "no_data_supplied": {
+        "@context": "https://openactive.io/ns/oa.jsonld",
+        "type": "Error",
+        "errorType": "https://openactive.io/errors/no_data_supplied",
+        "title": "No data supplied",
+        "details": "The client supplied no data",
+        "status": 400,
+        "instance": "",
+        "method": ""
+    },
+    "not_valid_json": {
+        "@context": "https://openactive.io/ns/oa.jsonld",
+        "type": "Error",
+        "errorType": "https://openactive.io/errors/not_json",
+        "title": "Not valid JSON",
+        "details": "The data supplied was not correctly formatted as json",
+        "status": 400,
+        "instance": "",
+        "method": ""
     }
 }

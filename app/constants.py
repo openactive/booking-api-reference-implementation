@@ -9,5 +9,5 @@ API = {
 
 LOCAL_PERSISTENCE = {
     "folder": "local_data",
-    "models": ['event','offer','order']
+    "models": ['event', 'offer', 'order']
 }
