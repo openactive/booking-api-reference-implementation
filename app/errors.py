@@ -44,7 +44,17 @@ ERRORS = {
         "type": "Error",
         "errorType": "https://openactive.io/errors/not_found",
         "title": "Not found",
-        "details": "The endpoint or resource you requested can not been found.",
+        "details": "The endpoint you requested can not been found.",
+        "status": 404,
+        "instance": "",
+        "method": ""
+    },
+    "resource_not_found": {
+        "@context": "https://openactive.io/ns/oa.jsonld",
+        "type": "Error",
+        "errorType": "https://openactive.io/errors/not_found",
+        "title": "Not found",
+        "details": "The resource you requested can not been found.",
         "status": 404,
         "instance": "",
         "method": ""
