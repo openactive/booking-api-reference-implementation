@@ -39,17 +39,10 @@ def feed():
 @app.route("/api/orders", methods=["POST"])
 @utils.requires_auth
 def create_order():
-<<<<<<< HEAD
-    params = ['orderedItem', 'acceptedOffer', 'customer','broker']
-    variables, erroring_params = utils.request_variables(params)
-    if len(erroring_params) > 0:
-        return utils.error_response("method_not_allowed")
-=======
-    params = ['product', 'orderedItem', 'customer', 'broker']
+    params = ['orderedItem', 'acceptedOffer', 'customer', 'broker']
     variables, erroring_params, error = utils.request_variables(params)
     if error:
         return utils.error_response(error)
->>>>>>> 2d1153d294a758a674d49aa1a1cf51fa4ff22fa9
     else:
         order = models.Order()
         order.create(variables)
