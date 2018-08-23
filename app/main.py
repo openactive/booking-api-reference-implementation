@@ -35,13 +35,14 @@ def feed():
     return utils.json_response(data)
 
 
+@app.route("/orders", methods=["POST"])
 @app.route("/api/orders", methods=["POST"])
 @utils.requires_auth
 def create_order():
-    params = ['product', 'orderedItem','customer','broker']
-    variables, erroring_params = utils.request_variables(params)
-    if len(erroring_params) > 0:
-        return utils.error_response("method_not_allowed")
+    params = ['product', 'orderedItem', 'customer', 'broker']
+    variables, erroring_params, error = utils.request_variables(params)
+    if error:
+        return utils.error_response(error)
     else:
         logging.warn(variables)
         order_id = str(uuid.uuid4())
@@ -80,28 +81,28 @@ def delete_order(order_id):
 ### HANDLING ERRORS ###
 
 # handling the disallowed verbs for the index route
-@app.route("/", methods=["POST","PUT","PATCH","DELETE"])
+@app.route("/", methods=["POST", "PUT", "PATCH", "DELETE"])
 @utils.requires_auth
 def index_error():
     return utils.error_response("method_not_allowed")
 
 
 # handling the disallowed verbs for the rdpe route
-@app.route("/api/rpde", methods=["POST","PUT","PATCH","DELETE"])
+@app.route("/api/rpde", methods=["POST", "PUT", "PATCH", "DELETE"])
 @utils.requires_auth
 def feed_error():
     return utils.error_response("method_not_allowed")
 
 
 # handling the disallowed verbs for the orders collection route
-@app.route("/api/orders", methods=["GET","PUT","PATCH","DELETE"])
+@app.route("/api/orders", methods=["GET", "PUT", "PATCH", "DELETE"])
 @utils.requires_auth
 def create_order_error():
     return utils.error_response("method_not_allowed")
 
 
 # handling the disallowed verbs for the orders item route
-@app.route("/api/orders/<order_id>", methods=["POST","PUT"])
+@app.route("/api/orders/<order_id>", methods=["POST", "PUT"])
 @utils.requires_auth
 def order_error(order_id):
     return utils.error_response("method_not_allowed")
