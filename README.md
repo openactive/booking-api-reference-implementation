@@ -55,13 +55,14 @@ Cancellation related error conditions
 - offers which could not be cancelled as the cancellation window had expired
 - orders which are in an uncancellable state (i.e. an order which is not in OrderDelivered)
 
-It simulates
+It simulates:
 - GET requests for Events, Offers, Orders
-- POST requests for creating Orders 
+- POST requests for creating Orders
 - PATCH requests for updating Orders (notifying payment/cancelling an order)
 
+Examples for these are included at the bottom of this document.
 
-## What does it not do in its current implementation?
+## What does it NOT do in its current implementation?
 
 It currently does not do the following things:
 
