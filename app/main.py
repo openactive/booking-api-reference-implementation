@@ -20,8 +20,7 @@ if not manage.check_persistence_exists():
 
 @app.route("/", methods=["GET"])
 def index():
-    return utils.json_response({'message':'Hello'})
-
+    return utils.error_response('nothing_to_see_here')
 
 @app.route("/orders", methods=["POST"])
 @app.route("/api/orders", methods=["POST"])

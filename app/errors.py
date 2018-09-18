@@ -308,5 +308,15 @@ ERRORS = {
         "status": 400,
         "instance": "",
         "method": ""
+    },
+    "nothing_to_see_here": {
+        "@context": "https://openactive.io/ns/oa.jsonld",
+        "type": "Error",
+        "errorType": "https://openactive.io/errors/nothing_to_see_here",
+        "title": "Nothing to see here, move along",
+        "details": "This is merely a welcome message for the '/' endpoint.",
+        "status": 418,
+        "instance": "",
+        "method": ""
     }
 }
