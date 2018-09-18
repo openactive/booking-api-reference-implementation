@@ -1,4 +1,4 @@
-from flask import request, Response, render_template
+from flask import request, Response
 from functools import wraps
 from datetime import datetime
 from datetime import timedelta
@@ -14,6 +14,8 @@ import logging
 
 def json_response(json_data, created=False, created_key=None, error=False):
 
+    # remove the non-Open Active properties from the returns if they are present
+    # these properties are only on Event to allow for relations between Events and Orders to be persisted locally
     if 'orderLeases' in json_data:
         del json_data['orderLeases']
     if 'completedOrders' in json_data:
@@ -22,7 +24,6 @@ def json_response(json_data, created=False, created_key=None, error=False):
     data = json.dumps(json_data)
     data = data.replace('$HOST$', request.host_url[0:len(request.host_url) - 1])
     data = data.replace('$VERSION$', constants.API['version'])
-
 
     if error:
         response = Response(data, json_data['status'])
@@ -42,13 +43,6 @@ def error_response(error_condition):
     data['instance'] = request.path
     data['method'] = request.method
     return json_response(data, error=True)
-
-
-def render_json(template_name, params={}):
-    params['host'] = request.host_url
-    rendered = render_template(template_name, **params)
-    rendered = rendered.replace('$HOST$', params['host'])
-    return json.loads(rendered)
 
 
 def check_auth(username, password):
