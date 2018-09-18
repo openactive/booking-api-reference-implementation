@@ -125,9 +125,6 @@ class Order(ObjectModel):
 
     def update(self, variables, cancel=False):
         super(Order, self).update(variables)
-        #self.potentialAction = []
-        #if not cancel:
-        #    logging.warn("PAYMENT")
         pass
 
 
