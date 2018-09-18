@@ -58,7 +58,7 @@ LOCAL_DATA = {
             "isCancellable": True,
             "cancellationValidUntilDelta": -1,
             "cancellationValidUntilDeltaType": "D",
-            "price": "9.99"
+            "price": 9.99
         }
     ]
 }
