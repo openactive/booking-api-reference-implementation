@@ -91,7 +91,8 @@ Data sent to the API should include an 'Accept' header, set to 'application/vnd.
 ## Examples
 
 
-`{
+```json
+{
 	"@context": "https://openactive.io/ns/oa.jsonld",
 	"type": "Order",
 	"broker": {
@@ -116,4 +117,5 @@ Data sent to the API should include an 'Accept' header, set to 'application/vnd.
 			"id": "http://localhost:5000/events/1234"
 		}
 	}]
-}`
+}
+```
