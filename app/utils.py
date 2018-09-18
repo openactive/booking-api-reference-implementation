@@ -13,9 +13,17 @@ import logging
 
 
 def json_response(json_data, created=False, created_key=None, error=False):
+
+    if 'orderLeases' in json_data:
+        del json_data['orderLeases']
+    if 'completedOrders' in json_data:
+        del json_data['completedOrders']
+
     data = json.dumps(json_data)
     data = data.replace('$HOST$', request.host_url[0:len(request.host_url) - 1])
     data = data.replace('$VERSION$', constants.API['version'])
+
+
     if error:
         response = Response(data, json_data['status'])
     else:
