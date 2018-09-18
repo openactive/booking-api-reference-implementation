@@ -58,6 +58,9 @@ def create_order():
     else:
         event_id = utils.get_identifier(variables['orderedItem'][0]['orderedItem']['id'])
         offer_id = utils.get_identifier(variables['acceptedOffer'][0]['id'])
+        utils.clean_expired_leases(event_id)
+
+
         event_data, event_error = models.Event(event_id).get()
         offer_data, offer_error = models.Offer(offer_id).get()
 
@@ -139,6 +142,7 @@ def create_order():
 @app.route("/api/events/<event_id>", methods=["GET"])
 #@utils.requires_auth
 def get_event(event_id):
+    utils.clean_expired_leases(event_id)
     data, error = models.Event(event_id).get()
     if not error:
         return utils.json_response(data)
@@ -176,11 +180,11 @@ def get_order(order_id):
 def update_order(order_id):
     order_data, error = models.Order(order_id).get()
 
-    event_id = utils.get_identifier(order_data['orderedItem'][0]['orderedItem']['id'])
-
     if error:
         return utils.error_response(error)
     else:
+        event_id = utils.get_identifier(order_data['orderedItem'][0]['orderedItem']['id'])
+
         params = ['payments', 'orderedItem']
         variables, erroring_params, error = utils.request_variables(params)
 
@@ -245,7 +249,35 @@ def update_order(order_id):
             return utils.json_response(order.as_json_ld())
         else:
             # CANCELLATION FLOW
-            logging.warn("CANCELLATION")
+            offer_id = utils.get_identifier(order_data['acceptedOffer'][0]['id'])
+
+            offer_data, error = models.Offer(offer_id).get()
+
+            if order_data['orderStatus'] != "https://schema.org/OrderDelivered":
+                return utils.error_response("order_cannot_be_cancelled")
+
+            if offer_data['isCancellable'] == False:
+                return utils.error_response("order_is_uncancellable")
+
+            if offer_data['isCancellable'] == True and utils.is_date_in_past(utils.from_datestring(offer_data['cancellationValidUntil'])):
+                return utils.error_response("order_cancellation_window_expired")
+
+            order_data['orderedItem'][0]['orderItemStatus'] = 'https://schema.org/OrderCancelled'
+            order_data['orderStatus'] = 'https://schema.org/OrderCancelled'
+
+            order = models.Order(order_id)
+            order.update(order_data)
+
+            quantity_of_order = int(order_data['orderedItem'][0]['orderQuantity'])
+
+            event_data, error = models.Event(event_id).get()
+            event_data['remainingAttendeeCapacity'] = event_data['remainingAttendeeCapacity'] + quantity_of_order
+            del event_data['completedOrders'][str(order_id)]
+
+            event = models.Event(event_id)
+            event.update(event_data)
+
+            return utils.json_response(order.as_json_ld())
 
 
 
