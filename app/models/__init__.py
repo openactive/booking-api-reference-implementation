@@ -29,6 +29,7 @@ class BaseModel():
 
     def create(self, variables):
         self.load(variables)
+        variables['identifier'] = self._identifier
         errors = self._provider.write(
             self._resource_type.lower(), self._identifier, json.dumps(self.as_json_ld(), sort_keys=True, indent=4, separators=(',', ': ')))
         return self.as_json_ld, errors
@@ -98,6 +99,7 @@ class ObjectModel(BaseModel):
         else:
             self._identifier = identifier
         self.id = '$HOST$/' + self._resource_type.lower() + 's/' + self._identifier
+        self.identifier = self._identifier
 
 
 class Order(ObjectModel):
@@ -116,8 +118,8 @@ class Order(ObjectModel):
     orderLeaseDuration: str = "PT15M"
 
     def create(self, variables):
-        super(Order, self).create(variables)
         self.potentialAction = [Action().new('Pay', url='$HOST$/orders/{order_id}')]
+        super(Order, self).create(variables)
         pass
 
     def update(self, variables, cancel=False):
