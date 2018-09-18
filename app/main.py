@@ -1,6 +1,6 @@
 import click
 from flask import Flask
-import uuid
+import random
 
 import utils
 import models
@@ -79,17 +79,14 @@ def create_order():
 
             if utils.is_date_in_past(utils.from_datestring(event_data['startDate'])):
                 # EVENT IS IN THE PAST
-                logging.warn('EVENT IS IN THE PAST')
                 return utils.error_response("unavailable_event")
 
             if utils.is_date_in_past(utils.from_datestring(offer_data['validThrough'])):
                 # OFFER VALID THROUGH IS IN THE PAST
-                logging.warn('VALID THROUGH IS IN THE PAST')
                 return utils.error_response("offer_expired")
 
             if not utils.is_date_in_past(utils.from_datestring(offer_data['validFrom'])):
                 # OFFER VALID FROM IS NOT YET IN THE PAST
-                logging.warn('VALID FROM IS NOT THE PAST')
                 return utils.error_response("offer_not_yet_valid")
 
             order = models.Order()
@@ -102,7 +99,7 @@ def create_order():
 
             variables['partOfInvoice'] = {
                 "type": "Invoice",
-                "paymentStatus": "PaymentDue",
+                "paymentStatus": "https://schema.org/PaymentDue",
                 "totalPaymentDue": {
                   "type": "MonetaryAmount",
                   "value": value_of_order,
@@ -121,6 +118,7 @@ def create_order():
 
             event_data['remainingAttendeeCapacity'] = event_data['remainingAttendeeCapacity'] - quantity_of_order
             event_data['orderLeases'][str(order_id)] = order_summary
+
             event = models.Event(event_id)
             event.update(event_data)
 
@@ -161,11 +159,14 @@ def get_offer(offer_id):
 
 @app.route("/orders/<order_id>", methods=["GET"])
 @app.route("/api/orders/<order_id>", methods=["GET"])
-@utils.requires_auth
+#@utils.requires_auth
 def get_order(order_id):
     data, error = models.Order(order_id).get()
     if not error:
-        return utils.json_response(data)
+        if data['orderStatus'] == "https://schema.org/OrderPaymentDue" and utils.is_date_in_past(utils.from_datestring(data['paymentDueDate'])):
+            return utils.error_response('anonymous_lease_expired')
+        else:
+            return utils.json_response(data)
     else:
         return utils.error_response(error)
 
@@ -173,9 +174,81 @@ def get_order(order_id):
 @app.route("/api/orders/<order_id>", methods=["PATCH"])
 @utils.requires_auth
 def update_order(order_id):
-    order = models.Order(order_id)
-    order.update({})
-    return utils.json_response(order.as_json_ld())
+    order_data, error = models.Order(order_id).get()
+
+    event_id = utils.get_identifier(order_data['orderedItem'][0]['orderedItem']['id'])
+
+    if error:
+        return utils.error_response(error)
+    else:
+        params = ['payments', 'orderedItem']
+        variables, erroring_params, error = utils.request_variables(params)
+
+        if params == erroring_params:
+            return utils.error_response('insufficient_information')
+
+        if [param for param in variables] == params:
+            return utils.error_response('too_much_information')
+
+        if 'payments' in variables and variables['payments'] is not None:
+            # PAYMENT FLOW
+            if utils.is_date_in_past(utils.from_datestring(order_data['paymentDueDate'])):
+                # LEASE HAS EXPIRED
+                # TODO delete the expired lease and release the places
+                #utils.clean_expired_leases(event_id)
+                return utils.error_response("anonymous_lease_expired")
+
+            if variables['payments'][0]['totalPaidToProvider']['value'] != order_data['partOfInvoice']['totalPaymentDue']['value']:
+                return utils.error_response("payment_amount_incorrect")
+
+            if variables['payments'][0]['totalPaidToProvider']['currency'] != order_data['partOfInvoice']['totalPaymentDue']['currency']:
+                return utils.error_response("currency_incorrect")
+
+            if order_data['orderStatus'] != "https://schema.org/OrderPaymentDue":
+                return utils.error_response("order_cannot_be_completed")
+
+            order_data['payments'] = variables['payments']
+            order_data['orderStatus'] = 'https://schema.org/OrderDelivered'
+            order_data['potentialAction'] = [{
+                "type": "CancelAction",
+                "name": "Cancel",
+                "target": {
+                    "type": "EntryPoint",
+                    "urlTemplate": "https://example.com/orders/{order_id}",
+                    "encodingType": "application/vnd.openactive.v1.0+json",
+                    "httpMethod": "PATCH"
+                }
+            }]
+            order_data['orderedItem'][0]['orderItemStatus'] = 'https://schema.org/OrderDelivered'
+            order_data['partOfInvoice']['paymentStatus'] = 'https://schema.org/PaymentComplete'
+            order_data['payments'][0]['confirmationNumber'] = 'C' + str(random.randint(0, 100000))
+
+            order = models.Order(order_id)
+            order.update(order_data)
+
+            event_data, error = models.Event(event_id).get()
+
+            # Remove used lease from Event
+
+            order_summary = event_data['orderLeases'][str(order_id)]
+            del event_data['orderLeases'][str(order_id)]
+            del order_summary['leaseExpiresAt']
+
+            # Add completed order to event
+
+            order_summary['orderCompletedAt'] = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+            event_data['completedOrders'][str(order_id)] = order_summary
+
+            event = models.Event(event_id)
+            event.update(event_data)
+
+            return utils.json_response(order.as_json_ld())
+        else:
+            # CANCELLATION FLOW
+            logging.warn("CANCELLATION")
+
+
+
 
 
 @app.route("/api/orders/<order_id>", methods=["DELETE"])
