@@ -17,6 +17,8 @@ local_data folder which is created.
 
 ## What can I do with it?
 
+You can use it to aid the development of your Open Active **broker** or Booking API Client library.
+
 ## What conditions does it simulate?
 
 It simulates the following conditions:
@@ -70,6 +72,20 @@ It currently does not do the following things:
 - validation of inputs against the Open Active data model (other tools are available for this)
 - simulation of opportunities other than events (Facility Use/Slots)
 - simulation of events with subEvents and schedules
+- simulation of deletion of created orders which the customer wished to not proceed with (the lease simply expires)
+- restricting further viewing/updating of an order to the broker which created it
+- restricting further viewing/updating of an order to the customer which created it
+
+## What is non-standard in this implementation
+
+There are two properties on Event which are not part of the Open Active standard, but are present to maintain state around leases and completed orders in the absence of a relational datastore.
+
+These are:
+
+- 'orderLeases'
+- 'completedOrders'
+
+They are omitted in the API returns, but are present in the JSON-LD representations of Events stored in the filesystem. These properties must NOT be used in a live implementation
 
 ## Installation/setup instructions
 
@@ -129,11 +145,38 @@ Data sent to the API should include an 'Accept' header, set to 'application/vnd.
 
 ## Errors
 
+All errors are returned to the client with an appropriate HTTP status code and as a JSON-LD formatted response.
+
+Errors are documented in the Booking API Specification v1.0. The text and description in these errors is intended as a guide only.
+
 ## What's in the sample data?
 
+The sample data is generated from the `clean_run_flask.sh` script using the current date as a starting place, with dummy events starting at 8am.
 
+- An event which has already passed
+- Two events in the future
+- Offers for each event, some cancellable, others not
+- A sample historic order
 
 ## Examples
+
+### Get Event
+
+
+### Get Offer
+
+
+### Get Order
+
+
+### Create Order
+
+
+### Update Order (payment)
+
+
+### Update Order (cancellation)
+
 
 
 ```json
