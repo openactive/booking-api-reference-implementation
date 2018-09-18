@@ -238,6 +238,35 @@ ERRORS = {
         "status": 400,
         "instance": "",
         "method": ""
+    },
+    "payment_amount_incorrect": {
+        "@context": "https://openactive.io/ns/oa.jsonld",
+        "type": "Error",
+        "errorType": "https://openactive.io/errors/payment_amount_incorrect",
+        "title": "Payment Amount Incorrect",
+        "details": "The amount paid does not match the amount in the invoice.",
+        "status": 400,
+        "instance": "",
+        "method": ""
+    },
+    "currency_incorrect": {
+        "@context": "https://openactive.io/ns/oa.jsonld",
+        "type": "Error",
+        "errorType": "https://openactive.io/errors/currency_incorrect",
+        "title": "Currency Incorrect",
+        "details": "The currency of the payment does not match the currency of the invoice.",
+        "status": 400,
+        "instance": "",
+        "method": ""
+    },
+    "order_cannot_be_completed": {
+        "@context": "https://openactive.io/ns/oa.jsonld",
+        "type": "Error",
+        "errorType": "https://openactive.io/errors/order_cannot_be_completed",
+        "title": "Order Cannot be Completed",
+        "details": "The order is not in a state where it can be completed.",
+        "status": 400,
+        "instance": "",
+        "method": ""
     }
-
 }
