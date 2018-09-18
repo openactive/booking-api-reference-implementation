@@ -24,8 +24,8 @@ You can use it to aid the development of your Open Active **broker** or Booking 
 It simulates the following conditions:
 
 - Successful Order Creation
-- Successful Payment
-- Successful Cancellation
+- Successful Recording of Payment (Order Completion)
+- Successful Order Cancellation
 
 Event related error conditions:
 - events which are full (0 remainingAttendeeCapacity)
@@ -62,7 +62,7 @@ It simulates:
 - POST requests for creating Orders
 - PATCH requests for updating Orders (notifying payment/cancelling an order)
 
-Examples for these are included at the bottom of this document.
+Examples for these are included further on in this document.
 
 ## What does it NOT do in its current implementation?
 
@@ -85,7 +85,7 @@ These are:
 - 'orderLeases'
 - 'completedOrders'
 
-They are omitted in the API returns, but are present in the JSON-LD representations of Events stored in the filesystem. These properties must NOT be used in a live implementation
+They are stripped from the API returns, but are present in the JSON-LD representations of Events stored in the filesystem. These properties must NOT be used in a live implementation.
 
 ## Installation/setup instructions
 
