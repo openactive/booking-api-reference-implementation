@@ -143,4 +143,17 @@ def add_time(this_datetime, interval, interval_type):
         return this_datetime + timedelta(hours=interval)
 
 def clean_expired_leases(event_id):
+    event_data, error = models.Event(event_id).get()
+    expired_leases = []
+    for lease in event_data['orderLeases']:
+        logging.warn(event_data['orderLeases'][lease])
+        if is_date_in_past(from_datestring(event_data['orderLeases'][lease]['leaseExpiresAt'])):
+            expired_leases.append(lease)
+            event_data['remainingAttendeeCapacity'] = event_data['remainingAttendeeCapacity'] + event_data['orderLeases'][lease]['places']
+    if len(expired_leases) > 0:
+        for lease in expired_leases:
+            del event_data['orderLeases'][lease]
+
+    event = models.Event(event_id)
+    event.update(event_data)
     pass
