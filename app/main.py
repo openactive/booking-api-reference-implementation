@@ -23,17 +23,6 @@ def index():
     return utils.json_response({'message':'Hello'})
 
 
-@app.route("/api/rpde", methods=["GET"])
-@utils.requires_auth
-def feed():
-    variables = {
-        'next': 'blah',
-        'items': []
-    }
-    data = utils.render_json('feed.json', variables)
-    return utils.json_response(data)
-
-
 @app.route("/orders", methods=["POST"])
 @app.route("/api/orders", methods=["POST"])
 @utils.requires_auth
