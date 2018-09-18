@@ -41,7 +41,6 @@ class FileSystemProvider():
 
     def write(self, resource_type, resource_id, content):
         error = None
-        logging.warn(self.build_filepath(resource_type, resource_id))
         try:
             _file = self.get_file_handle(resource_type, resource_id, 'w')
             _file.write(content)
