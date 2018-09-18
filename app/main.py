@@ -93,6 +93,7 @@ def create_order():
                 return utils.error_response("offer_not_yet_valid")
 
             order = models.Order()
+
             variables['orderDate'] = datetime.now()
             variables['paymentDueDate'] = utils.add_time(datetime.now(), 15, 'M')
 
@@ -109,10 +110,17 @@ def create_order():
                 }
             }
 
-
             order.create(variables)
+            order_data, errors = order.get()
+            order_id = order_data['identifier']
+
+            order_summary = {
+                'leaseExpiresAt': order_data['paymentDueDate'],
+                'places': quantity_of_order
+            }
 
             event_data['remainingAttendeeCapacity'] = event_data['remainingAttendeeCapacity'] - quantity_of_order
+            event_data['orderLeases'][str(order_id)] = order_summary
             event = models.Event(event_id)
             event.update(event_data)
 
@@ -141,7 +149,7 @@ def get_event(event_id):
 
 
 @app.route("/offers/<offer_id>", methods=["GET"])
-@app.route("/api/orders/<offer_id>", methods=["GET"])
+@app.route("/api/offers/<offer_id>", methods=["GET"])
 #@utils.requires_auth
 def get_offer(offer_id):
     data, error = models.Offer(offer_id).get()
