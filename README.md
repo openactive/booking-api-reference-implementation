@@ -21,6 +21,46 @@ local_data folder which is created.
 
 It simulates the following conditions:
 
+- Successful Order Creation
+- Successful Payment
+- Successful Cancellation
+
+Event related error conditions:
+- events which are full (0 remainingAttendeeCapacity)
+- events which do not have enough spaces required for the order
+- events which cannot yet be booked
+- events which are in the past
+- events which don't exist
+
+Offer related error conditions:
+- offers which are not yet valid
+- offers which have expired
+- offers which don't exist
+- mismatch of offer and event
+
+Order related error conditions
+- missing customer details
+- missing broker details
+- missing order item (the event required and number of places)
+- missing accepted offer (the offer chosen by the customer)
+- expiry of the anonymous lease
+
+Payment related error conditions
+- no payment information provided
+- wrong payment amount (payment amount not matching invoice amount)
+- wrong payment currency (payment currency not matching invoice currency)
+
+Cancellation related error conditions
+- uncancellable offers
+- offers which could not be cancelled as the cancellation window had expired
+- orders which are in an uncancellable state (i.e. an order which is not in OrderDelivered)
+
+It simulates
+- GET requests for Events, Offers, Orders
+- POST requests for creating Orders 
+- PATCH requests for updating Orders (notifying payment/cancelling an order)
+
+
 ## What does it not do in its current implementation?
 
 It currently does not do the following things:
@@ -87,6 +127,10 @@ All data provided to and returned by the API is in a JSON-LD format conforming t
 Data sent to the API should include an 'Accept' header, set to 'application/vnd.openactive.v1.0+json'
 
 ## Errors
+
+## What's in the sample data?
+
+
 
 ## Examples
 
