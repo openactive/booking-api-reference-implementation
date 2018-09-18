@@ -116,6 +116,7 @@ class Order(ObjectModel):
     paymentDueDate: str = ""
     potentialAction: List[Dict] = []
     orderLeaseDuration: str = "PT15M"
+    payments: List[Dict] = []
 
     def create(self, variables):
         self.potentialAction = [Action().new('Pay', url='$HOST$/orders/{order_id}')]
