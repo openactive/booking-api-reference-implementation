@@ -18,10 +18,56 @@ if not manage.check_persistence_exists():
     manage.populate_persistence()
 
 
+### NON OPEN ACTIVE BOOKING API ENDPOINT ###
+
 @app.route("/", methods=["GET"])
 def index():
     return utils.error_response('nothing_to_see_here')
 
+### OPEN ACTIVE BOOKING API ENDPOINTS ###
+
+### GET functions ###
+
+@app.route("/events/<event_id>", methods=["GET"])
+@app.route("/api/events/<event_id>", methods=["GET"])
+#@utils.requires_auth
+def get_event(event_id):
+    utils.clean_expired_leases(event_id)
+    data, error = models.Event(event_id).get()
+    if not error:
+        return utils.json_response(data)
+    else:
+        return utils.error_response(error)
+
+
+@app.route("/offers/<offer_id>", methods=["GET"])
+@app.route("/api/offers/<offer_id>", methods=["GET"])
+#@utils.requires_auth
+def get_offer(offer_id):
+    data, error = models.Offer(offer_id).get()
+    if not error:
+        return utils.json_response(data)
+    else:
+        return utils.error_response(error)
+
+
+@app.route("/orders/<order_id>", methods=["GET"])
+@app.route("/api/orders/<order_id>", methods=["GET"])
+#@utils.requires_auth
+def get_order(order_id):
+    data, error = models.Order(order_id).get()
+    if not error:
+        if data['orderStatus'] == "https://schema.org/OrderPaymentDue" and utils.is_date_in_past(utils.from_datestring(data['paymentDueDate'])):
+            return utils.error_response('anonymous_lease_expired')
+        else:
+            return utils.json_response(data)
+    else:
+        return utils.error_response(error)
+
+
+### POST functions ###
+
+# TODO refactor
 @app.route("/orders", methods=["POST"])
 @app.route("/api/orders", methods=["POST"])
 @utils.requires_auth
@@ -122,45 +168,9 @@ def create_order():
                 # OFFER NOT FOUND
                 return utils.error_response("unavailable_offer")
 
+### PATCH functions ###
 
-
-@app.route("/events/<event_id>", methods=["GET"])
-@app.route("/api/events/<event_id>", methods=["GET"])
-#@utils.requires_auth
-def get_event(event_id):
-    utils.clean_expired_leases(event_id)
-    data, error = models.Event(event_id).get()
-    if not error:
-        return utils.json_response(data)
-    else:
-        return utils.error_response(error)
-
-
-@app.route("/offers/<offer_id>", methods=["GET"])
-@app.route("/api/offers/<offer_id>", methods=["GET"])
-#@utils.requires_auth
-def get_offer(offer_id):
-    data, error = models.Offer(offer_id).get()
-    if not error:
-        return utils.json_response(data)
-    else:
-        return utils.error_response(error)
-
-
-@app.route("/orders/<order_id>", methods=["GET"])
-@app.route("/api/orders/<order_id>", methods=["GET"])
-#@utils.requires_auth
-def get_order(order_id):
-    data, error = models.Order(order_id).get()
-    if not error:
-        if data['orderStatus'] == "https://schema.org/OrderPaymentDue" and utils.is_date_in_past(utils.from_datestring(data['paymentDueDate'])):
-            return utils.error_response('anonymous_lease_expired')
-        else:
-            return utils.json_response(data)
-    else:
-        return utils.error_response(error)
-
-
+# TODO refactor
 @app.route("/api/orders/<order_id>", methods=["PATCH"])
 @utils.requires_auth
 def update_order(order_id):
@@ -265,10 +275,8 @@ def update_order(order_id):
 
             return utils.json_response(order.as_json_ld())
 
-
-
-
-
+### DELETE FUNCTIONS ###
+# TODO either remove this or make it functional
 @app.route("/api/orders/<order_id>", methods=["DELETE"])
 @utils.requires_auth
 def delete_order(order_id):
@@ -313,6 +321,7 @@ def order_error(order_id):
 def default(path):
     return utils.error_response("not_found")
 
+### MANAGER FUNCTIONS, FOR TEARING DOWN/SETTNG UP LOCAL STORAGE ###
 
 @app.cli.command()
 def rebuild():
