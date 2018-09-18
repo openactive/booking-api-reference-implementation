@@ -19,10 +19,8 @@ if not manage.check_persistence_exists():
 
 
 @app.route("/", methods=["GET"])
-@utils.requires_auth
 def index():
-    data = utils.render_json('index.json')
-    return utils.json_response(data)
+    return utils.json_response({'message':'Hello'})
 
 
 @app.route("/api/rpde", methods=["GET"])
