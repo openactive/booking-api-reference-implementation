@@ -1,12 +1,16 @@
 from flask import request, Response, render_template
 from functools import wraps
+from datetime import datetime
+from datetime import timedelta
+
 import json
 
 import constants
 import errors
+import models
+
 import logging
-from datetime import datetime
-from datetime import timedelta
+
 
 def json_response(json_data, created=False, created_key=None, error=False):
     data = json.dumps(json_data)
@@ -137,3 +141,6 @@ def add_time(this_datetime, interval, interval_type):
         return this_datetime + timedelta(days=interval)
     elif interval_type == 'H':
         return this_datetime + timedelta(hours=interval)
+
+def clean_expired_leases(event_id):
+    pass
