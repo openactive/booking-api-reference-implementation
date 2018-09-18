@@ -5,7 +5,8 @@ import json
 import constants
 import errors
 import logging
-
+from datetime import datetime
+from datetime import timedelta
 
 def json_response(json_data, created=False, created_key=None, error=False):
     data = json.dumps(json_data)
@@ -51,7 +52,6 @@ def get_api_key():
         return request.headers['x-api-key']
     else:
         return False
-
 
 def requires_auth(f):
     @wraps(f)
@@ -113,3 +113,27 @@ def request_variables(params):
             else:
                 erroring_params.append(param)
     return variables, erroring_params, error
+
+
+def get_identifier(url):
+    return url.rsplit('/', 1)[1]
+
+
+def from_datestring(datestring):
+    return datetime.strptime(datestring, "%Y-%m-%dT%H:%M:%SZ")
+
+def is_date_in_past(this_datetime):
+    if this_datetime >= datetime.now():
+        return False
+    else:
+        return True
+
+def add_time(this_datetime, interval, interval_type):
+    if interval_type == 'M':
+        return this_datetime + timedelta(minutes=interval)
+    elif interval_type == 'W':
+        return this_datetime + timedelta(weeks=interval)
+    elif interval_type == 'D':
+        return this_datetime + timedelta(days=interval)
+    elif interval_type == 'H':
+        return this_datetime + timedelta(hours=interval)
