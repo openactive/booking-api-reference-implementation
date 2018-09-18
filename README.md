@@ -163,6 +163,8 @@ The sample data is generated from the `clean_run_flask.sh` script using the curr
 ### Get Event
 
 
+
+
 ### Get Offer
 
 
@@ -170,14 +172,6 @@ The sample data is generated from the `clean_run_flask.sh` script using the curr
 
 
 ### Create Order
-
-
-### Update Order (payment)
-
-
-### Update Order (cancellation)
-
-
 
 ```json
 {
@@ -207,3 +201,8 @@ The sample data is generated from the `clean_run_flask.sh` script using the curr
 	}]
 }
 ```
+
+### Update Order (payment)
+
+
+### Update Order (cancellation)
