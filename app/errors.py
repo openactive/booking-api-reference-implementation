@@ -179,6 +179,16 @@ ERRORS = {
         "instance": "",
         "method": ""
     },
+    "unavailable_order": {
+        "@context": "https://openactive.io/ns/oa.jsonld",
+        "type": "Error",
+        "errorType": "https://openactive.io/errors/unavailable_order",
+        "title": "Unavailable Order",
+        "details": "The order specified does not exist or had expired.",
+        "status": 400,
+        "instance": "",
+        "method": ""
+    },
     "unavailable_event": {
         "@context": "https://openactive.io/ns/oa.jsonld",
         "type": "Error",
@@ -265,6 +275,36 @@ ERRORS = {
         "errorType": "https://openactive.io/errors/order_cannot_be_completed",
         "title": "Order Cannot be Completed",
         "details": "The order is not in a state where it can be completed.",
+        "status": 400,
+        "instance": "",
+        "method": ""
+    },
+    "order_cannot_be_cancelled": {
+        "@context": "https://openactive.io/ns/oa.jsonld",
+        "type": "Error",
+        "errorType": "https://openactive.io/errors/order_cannot_be_cancelled",
+        "title": "Order Cannot be Cancelled",
+        "details": "The order is not in a state where it can be cancelled.",
+        "status": 400,
+        "instance": "",
+        "method": ""
+    },
+    "order_is_uncancellable": {
+        "@context": "https://openactive.io/ns/oa.jsonld",
+        "type": "Error",
+        "errorType": "https://openactive.io/errors/order_is_uncancellable",
+        "title": "Order is Uncancellable",
+        "details": "The offer in the order is not cancellable.",
+        "status": 400,
+        "instance": "",
+        "method": ""
+    },
+    "order_cancellation_window_expired": {
+        "@context": "https://openactive.io/ns/oa.jsonld",
+        "type": "Error",
+        "errorType": "https://openactive.io/errors/order_is_uncancellable",
+        "title": "Order Cancellation Window Expired",
+        "details": "The order cannot be cancelled as the cancellation window has expired.",
         "status": 400,
         "instance": "",
         "method": ""
