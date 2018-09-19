@@ -37,7 +37,6 @@ LOCAL_DATA = {
     ],
     'Offers': [
         {
-            "identifier": "1",
             "name": "Aerobics - early bird",
             "description": "Early bird booking for Aerobics. Cannot be cancelled",
             "validFromDelta": -1,
@@ -48,7 +47,6 @@ LOCAL_DATA = {
             "price": 7.99
         },
         {
-            "identifier": "2",
             "name": "Aerobics - full price",
             "description": "Normal price booking for Aerobics. Can be cancelled up to the day before.",
             "validFromDelta": -1,

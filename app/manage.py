@@ -54,8 +54,8 @@ class Manage():
         pass
 
     def create_event(self, event_data, today):
-        identifier = event_data['identifier']
-        event = models.Event(identifier=identifier)
+        event_id = event_data['identifier']
+        event = models.Event(identifier=event_id)
 
         startTime = event_data['startTime'].split(':')
         adjusted_now = datetime(today.year, today.month, today.day,
@@ -69,19 +69,20 @@ class Manage():
             str(event_data['durationDelta']) + event_data['durationDeltaType']
 
         event_data['offers'] = []
+        print('>>> Creating Event ' + event_id)
+        i = 1
         for offer_data in LOCAL_DATA['Offers']:
+            offer_id = event_id + str(i)
             offer = self.create_offer(
-                offer_data, identifier, event_data['startDate'])
+                offer_data, event_id, offer_id, event_data['startDate'])
             del offer['@context']
             event_data['offers'].append(offer)
-
+            i += 1
         event.create(event_data)
 
-    def create_offer(self, offer_data, event_id, event_start_date):
-        print(event_id)
-        print(offer_data['identifier'])
-        identifier = event_id + offer_data['identifier']
+    def create_offer(self, offer_data, event_id, offer_id, event_start_date):
 
+        print('>>>> Creating Offer ' + offer_id)
         offer_data['itemOffered'] = {
             "type": "Event",
             "id": "$HOST$/events/" + event_id
@@ -96,6 +97,6 @@ class Manage():
             offer_data['cancellationValidUntil'] = utils.add_time(
                 event_start_date, offer_data['cancellationValidUntilDelta'], offer_data['cancellationValidUntilDeltaType'])
 
-        offer = models.Offer(identifier=identifier)
+        offer = models.Offer(offer_id)
         offer.create(offer_data)
         return offer.as_json_ld()
